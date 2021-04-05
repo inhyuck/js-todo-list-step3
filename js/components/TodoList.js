@@ -1,83 +1,87 @@
 import {PRIORITY_TYPE} from '../consts/priorityType.js';
 
 export default function TodoList($el, props, {toggleTodoItem, deleteTodoItem, editTodoItemContents, editTodoItemPriority}) {
-	const bindEvents = () => {
-		this.$el.addEventListener('click', event => {
-			const {action} = event.target.dataset;
+    const bindEvents = () => {
+        this.$el.addEventListener('click', event => {
+            const {action} = event.target.dataset;
 
-			if (action === 'toggle') {
-				event.stopPropagation();
-				const $todoItem = event.target.closest('li');
-				const todoItemId = $todoItem.dataset.todoItemId;
-				toggleTodoItem(todoItemId);
-				return;
-			}
+            if (action === 'toggle') {
+                event.stopPropagation();
+                const $todoItem = event.target.closest('li');
+                const todoItemId = $todoItem.dataset.todoItemId;
+                toggleTodoItem(todoItemId);
+                return;
+            }
 
-			if (action === 'delete') {
-				event.stopPropagation();
-				const $todoItem = event.target.closest('li');
-				const todoItemId = $todoItem.dataset.todoItemId;
-				deleteTodoItem(todoItemId);
-				return;
-			}
-		});
+            if (action === 'delete') {
+                event.stopPropagation();
+                const $todoItem = event.target.closest('li');
+                const todoItemId = $todoItem.dataset.todoItemId;
+                deleteTodoItem(todoItemId);
+                return;
+            }
+        });
 
-		this.$el.addEventListener('dblclick', event => {
-			const {action} = event.target.dataset;
+        this.$el.addEventListener('dblclick', event => {
+            const {action} = event.target.dataset;
 
-			if (action === 'onEditingContents') {
-				event.stopPropagation();
-				event.target.closest('li').classList.add('editing');
-				return;
-			}
+            if (action === 'onEditingContents') {
+                event.stopPropagation();
+                event.target.closest('li')
+                     .classList
+                     .add('editing');
+                return;
+            }
 
-			if (action === 'onEditingPriority') {
-				event.stopPropagation();
-				const $todoItem = event.target.closest('li');
-				const todoItemId = $todoItem.dataset.todoItemId;
-				this.state.todoItems.find(todoItem => todoItem._id === todoItemId).onEditingPriority = true;
+            if (action === 'onEditingPriority') {
+                event.stopPropagation();
+                const $todoItem = event.target.closest('li');
+                const todoItemId = $todoItem.dataset.todoItemId;
+                this.state.todoItems.find(todoItem => todoItem._id === todoItemId).onEditingPriority = true;
 
-				this.setState({todoItems: this.state.todoItems});
-			}
-		});
+                this.setState({todoItems: this.state.todoItems});
+            }
+        });
 
-		this.$el.addEventListener('keypress', ({target, key}) => {
-			if (key !== 'Enter' && key !== 'Escape') {
-				return;
-			}
+        this.$el.addEventListener('keypress', ({target, key}) => {
+            if (key !== 'Enter' && key !== 'Escape') {
+                return;
+            }
 
-			const {action} = target.dataset;
-			const $todoItem = target.closest('li');
-			const todoItemId = $todoItem.dataset.todoItemId;
+            const {action} = target.dataset;
+            const $todoItem = target.closest('li');
+            const todoItemId = $todoItem.dataset.todoItemId;
 
-			if (action === 'edit') {
-				if (key === 'Enter') {
-					editTodoItemContents(todoItemId, target.value);
-					return;
-				}
-				if (key === 'Escape') {
-					target.value = this.state.todoItems.find(todoItem => todoItem._id === todoItemId).contents;
-					$todoItem.classList.remove('editing');
-					return;
-				}
-			}
-		});
+            if (action !== 'edit') {
+                return;
+            }
 
-		this.$el.addEventListener('change', event => {
-			const {action} = event.target.dataset;
+            if (key === 'Enter') {
+                editTodoItemContents(todoItemId, target.value);
+                return;
+            }
+            if (key === 'Escape') {
+                target.value = this.state.todoItems.find(todoItem => todoItem._id === todoItemId).contents;
+                $todoItem.classList.remove('editing');
+                return;
+            }
+        });
 
-			if (action === 'changePriority') {
-				const priority = event.target.value;
-				const $todoItem = event.target.closest('li');
-				const todoItemId = $todoItem.dataset.todoItemId;
+        this.$el.addEventListener('change', event => {
+            const {action} = event.target.dataset;
 
-				editTodoItemPriority(todoItemId, priority);
-			}
-		});
-	};
+            if (action === 'changePriority') {
+                const priority = event.target.value;
+                const $todoItem = event.target.closest('li');
+                const todoItemId = $todoItem.dataset.todoItemId;
 
-	const makeTodoItemLoadingTemplate = function () {
-		return `
+                editTodoItemPriority(todoItemId, priority);
+            }
+        });
+    };
+
+    const makeTodoItemLoadingTemplate = function () {
+        return `
 			<li>
 				<div class="view">
 				<label class="label">
@@ -90,11 +94,11 @@ export default function TodoList($el, props, {toggleTodoItem, deleteTodoItem, ed
 				</div>
 			</li>
 		`;
-	};
+    };
 
-	const makeTodoItemTemplate = function (todoItem) {
-		const {_id, contents, priority, isCompleted, onEditingPriority} = todoItem;
-		return `
+    const makeTodoItemTemplate = function (todoItem) {
+        const {_id, contents, priority, isCompleted, onEditingPriority} = todoItem;
+        return `
 			<li class="${isCompleted ? 'completed' : ''}" data-todo-item-id="${_id}">
 				<div class="view">
 					<input class="toggle" type="checkbox" data-action="toggle" ${isCompleted ? 'checked' : ''} />
@@ -109,27 +113,27 @@ export default function TodoList($el, props, {toggleTodoItem, deleteTodoItem, ed
 				<input class="edit" data-action="edit" value="${contents}" />
 			</li>
 		`;
-	};
+    };
 
-	const sortByPriority = (todoItemA, todoItemB) => {
-		const {priority: priorityA} = todoItemA;
-		const {priority: priorityB} = todoItemB;
+    const sortByPriority = (todoItemA, todoItemB) => {
+        const {priority: priorityA} = todoItemA;
+        const {priority: priorityB} = todoItemB;
 
-		if (PRIORITY_TYPE[priorityA].order > PRIORITY_TYPE[priorityB].order) {
-			return 1;
-		}
+        if (PRIORITY_TYPE[priorityA].order > PRIORITY_TYPE[priorityB].order) {
+            return 1;
+        }
 
-		if (PRIORITY_TYPE[priorityA].order < PRIORITY_TYPE[priorityB].order) {
-			return -1;
-		}
+        if (PRIORITY_TYPE[priorityA].order < PRIORITY_TYPE[priorityB].order) {
+            return -1;
+        }
 
-		return 0;
-	};
+        return 0;
+    };
 
-	const makePriorityTemplate = function (priority, onEditingPriority) {
-		const isEditing = onEditingPriority || priority === 'NONE';
+    const makePriorityTemplate = function (priority, onEditingPriority) {
+        const isEditing = onEditingPriority || priority === 'NONE';
 
-		return `
+        return `
 			<select class="chip select ${isEditing ? '' : 'hidden'}" data-action="changePriority">
 				<option value="NONE" ${priority === 'NONE' ? 'selected' : ''}>순위</option>
 				<option value="FIRST" ${priority === 'FIRST' ? 'selected' : ''}>1순위</option>
@@ -139,41 +143,42 @@ export default function TodoList($el, props, {toggleTodoItem, deleteTodoItem, ed
 				${PRIORITY_TYPE[priority].text}
 			</span>
         `;
-	};
+    };
 
-	this.setState = ({todoItems, isLoading}) => {
-		this.state = {
-			...this.state,
-			todoItems,
-			isLoading,
-		};
+    this.setState = ({todoItems, isLoading}) => {
+        this.state = {
+            ...this.state,
+            todoItems,
+            isLoading,
+        };
 
-		render();
-	};
+        render();
+    };
 
-	const render = () => {
-		const {todoItems, isLoading} = this.state;
-		const sortedTodoItems = todoItems.sort(sortByPriority);
+    const render = () => {
+        const {todoItems, isLoading} = this.state;
+        const sortedTodoItems = todoItems.sort(sortByPriority);
 
-		this.$el.innerHTML = `
+        this.$el.innerHTML = `
         <section class="main">
           <ul class="todo-list">
-            ${isLoading ? makeTodoItemLoadingTemplate() : sortedTodoItems.map(makeTodoItemTemplate).join('')}
+            ${isLoading ? makeTodoItemLoadingTemplate() : sortedTodoItems.map(makeTodoItemTemplate)
+                                                                         .join('')}
           </ul>
         </section>
         `;
-	};
+    };
 
-	const init = () => {
-		this.$el = $el;
-		this.state = {
-			todoItems: props.todoItems,
-			isLoading: props.isLoading,
-		};
+    const init = () => {
+        this.$el = $el;
+        this.state = {
+            todoItems: props.todoItems,
+            isLoading: props.isLoading,
+        };
 
-		render();
-		bindEvents();
-	};
+        render();
+        bindEvents();
+    };
 
-	init();
+    init();
 }
